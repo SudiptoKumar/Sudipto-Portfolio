@@ -9,8 +9,8 @@ on:
         default: "import"
         type: choice
         options:
-          - clean
           - import
+          - clean
 
 permissions:
   contents: write
@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       # ==================================================
       # CHECKOUT
       # ==================================================
@@ -28,15 +29,32 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_PAT }}
+          persist-credentials: true
+
+      # ==================================================
+      # CHECK GH_PAT
+      # ==================================================
+      - name: Verify GH_PAT
+        shell: bash
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$GH_PAT" ]; then
+            echo "::error::GH_PAT secret is missing."
+            exit 1
+          fi
+
+          echo "GH_PAT secret is available."
 
       # ==================================================
       # CLEAN
       #
-      # Deletes everything except:
-      #   1. .github/workflows/
-      #   2. ZIP files in repository root
-      #
-      # ZIP files are NOT extracted or deleted.
+      # Keeps:
+      #   .git
+      #   .github/workflows
+      #   ZIP files
       # ==================================================
       - name: Clean repository
         if: ${{ inputs.operation == 'clean' }}
@@ -46,14 +64,12 @@ jobs:
 
           echo "Cleaning repository..."
 
-          # Delete everything at repository root except .git, .github and ZIP files.
           find . -mindepth 1 -maxdepth 1 \
             ! -name ".git" \
             ! -name ".github" \
             ! -iname "*.zip" \
             -exec rm -rf {} +
 
-          # Keep only .github/workflows inside .github.
           if [ -d ".github" ]; then
             find .github -mindepth 1 -maxdepth 1 \
               ! -name "workflows" \
@@ -61,10 +77,7 @@ jobs:
           fi
 
           echo ""
-          echo "Cleanup complete."
-          echo "Preserved:"
-          echo "  .github/workflows/"
-          echo "  ZIP files in repository root"
+          echo "Clean completed."
 
           echo ""
           echo "Remaining files:"
@@ -86,7 +99,8 @@ jobs:
             find . -maxdepth 1 \
               -type f \
               -iname "*.zip" \
-              -print
+              -printf "%f\n" \
+              | sort
           )
 
           if [ "${#ZIPS[@]}" -eq 0 ]; then
@@ -96,15 +110,18 @@ jobs:
 
           if [ "${#ZIPS[@]}" -gt 1 ]; then
             echo "::error::More than one ZIP file found."
-            echo "Please keep only one ZIP before running Import."
-            printf '%s\n' "${ZIPS[@]}"
+            echo ""
+            echo "Found:"
+            printf ' - %s\n' "${ZIPS[@]}"
+            echo ""
+            echo "Keep only ONE ZIP file in the repository root."
             exit 1
           fi
 
-          ZIP="${ZIPS[0]}"
+          ZIP_NAME="${ZIPS[0]}"
 
-          echo "Found: $ZIP"
-          echo "ZIP=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "ZIP found: $ZIP_NAME"
+          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_OUTPUT"
 
       # ==================================================
       # EXTRACT ZIP
@@ -112,15 +129,15 @@ jobs:
       - name: Extract ZIP
         if: ${{ inputs.operation == 'import' }}
         shell: bash
+        env:
+          ZIP_NAME: ${{ steps.find_zip.outputs.ZIP_NAME }}
         run: |
           set -euo pipefail
 
-          rm -rf /tmp/project
-          mkdir -p /tmp/project
+          rm -rf /tmp/portfolio-import
+          mkdir -p /tmp/portfolio-import
 
-          unzip -q -o \
-            "${{ steps.find_zip.outputs.ZIP }}" \
-            -d /tmp/project
+          unzip -q -o "$ZIP_NAME" -d /tmp/portfolio-import
 
           echo "ZIP extracted successfully."
 
@@ -134,69 +151,135 @@ jobs:
         run: |
           set -euo pipefail
 
-          ROOT="/tmp/project"
+          ROOT="/tmp/portfolio-import"
 
-          # ZIP contains project files directly.
-          if [ -f "$ROOT/main.py" ] || \
-             [ -f "$ROOT/package.json" ] || \
+          echo "Checking ZIP structure..."
+
+          # -----------------------------------------------
+          # Case 1:
+          # Files are directly inside ZIP
+          # -----------------------------------------------
+          if [ -f "$ROOT/package.json" ] || \
+             [ -f "$ROOT/index.html" ] || \
+             [ -f "$ROOT/main.py" ] || \
              [ -f "$ROOT/requirements.txt" ] || \
-             [ -d "$ROOT/app" ] || \
              [ -d "$ROOT/src" ] || \
-             [ -d "$ROOT/tests" ] || \
-             [ -d "$ROOT/.github" ]; then
+             [ -d "$ROOT/app" ]; then
 
+            echo "Project files detected directly inside ZIP."
             echo "ROOT=$ROOT" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          # ZIP contains one top-level project folder.
+          # -----------------------------------------------
+          # Case 2:
+          # ZIP contains one project folder
+          # -----------------------------------------------
           mapfile -t DIRS < <(
             find "$ROOT" \
               -mindepth 1 \
               -maxdepth 1 \
-              -type d
+              -type d \
+              -printf "%p\n"
           )
 
           mapfile -t FILES < <(
             find "$ROOT" \
               -mindepth 1 \
               -maxdepth 1 \
-              -type f
+              -type f \
+              -printf "%p\n"
           )
 
           if [ "${#DIRS[@]}" -eq 1 ] && \
              [ "${#FILES[@]}" -eq 0 ]; then
 
+            echo "Single project folder detected."
             echo "ROOT=${DIRS[0]}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ROOT=$ROOT" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
 
+          echo "::error::Could not determine project root."
+          echo ""
+          echo "ZIP structure:"
+          find "$ROOT" -maxdepth 3 -print | sort
+          exit 1
+
       # ==================================================
-      # IMPORT EVERYTHING
+      # VALIDATE PROJECT
+      # ==================================================
+      - name: Validate project
+        if: ${{ inputs.operation == 'import' }}
+        shell: bash
+        env:
+          ROOT: ${{ steps.project_root.outputs.ROOT }}
+        run: |
+          set -euo pipefail
+
+          echo "Validating project..."
+          echo "Root: $ROOT"
+
+          if [ ! -f "$ROOT/package.json" ] && \
+             [ ! -f "$ROOT/index.html" ]; then
+
+            echo "::error::The ZIP does not appear to contain a valid portfolio project."
+            echo ""
+            echo "Expected at least package.json or index.html."
+            exit 1
+          fi
+
+          echo "Project validation passed."
+
+      # ==================================================
+      # REMOVE OLD PORTFOLIO
       #
-      # .github is NOT excluded.
-      # Existing files with the same path are replaced.
-      # New files are added.
+      # IMPORTANT:
+      # .github is preserved so this workflow cannot
+      # accidentally delete itself.
       # ==================================================
-      - name: Import project
+      - name: Remove old portfolio
         if: ${{ inputs.operation == 'import' }}
         shell: bash
         run: |
           set -euo pipefail
 
-          ROOT="${{ steps.project_root.outputs.ROOT }}"
+          echo "Removing old portfolio files..."
+
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name ".git" \
+            ! -name ".github" \
+            ! -iname "*.zip" \
+            -exec rm -rf {} +
+
+          echo "Old portfolio removed."
+
+      # ==================================================
+      # IMPORT NEW PORTFOLIO
+      #
+      # .github from ZIP is deliberately ignored.
+      # This protects the workflow itself.
+      # ==================================================
+      - name: Import new portfolio
+        if: ${{ inputs.operation == 'import' }}
+        shell: bash
+        env:
+          ROOT: ${{ steps.project_root.outputs.ROOT }}
+        run: |
+          set -euo pipefail
+
+          echo "Importing new portfolio..."
 
           rsync -a \
             --exclude=".git/" \
+            --exclude=".github/" \
             "$ROOT/" ./
 
-          echo "Project imported successfully."
+          echo "Portfolio imported successfully."
 
       # ==================================================
-      # DELETE ZIP FILES
+      # REMOVE ZIP
       # ==================================================
-      - name: Delete ZIP files
+      - name: Remove ZIP
         if: ${{ inputs.operation == 'import' }}
         shell: bash
         run: |
@@ -207,12 +290,29 @@ jobs:
             -iname "*.zip" \
             -delete
 
-          echo "All ZIP files deleted."
+          echo "ZIP removed."
 
       # ==================================================
-      # COMMIT AND PUSH
+      # SHOW FINAL STRUCTURE
       # ==================================================
-      - name: Commit and push
+      - name: Verify final repository
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo ""
+          echo "========================================"
+          echo "FINAL REPOSITORY"
+          echo "========================================"
+
+          find . -maxdepth 3 -type f \
+            ! -path "./.git/*" \
+            | sort
+
+      # ==================================================
+      # COMMIT
+      # ==================================================
+      - name: Commit changes
         shell: bash
         run: |
           set -euo pipefail
@@ -224,21 +324,40 @@ jobs:
           git add -A
 
           if git diff --cached --quiet; then
-            echo "No changes to commit."
+            echo "No changes detected."
             exit 0
           fi
 
           if [ "${{ inputs.operation }}" = "clean" ]; then
-            MESSAGE="Clean repository"
+            git commit -m "chore: clean repository"
           else
-            MESSAGE="Import project from ZIP"
+            git commit -m "chore: import portfolio from ZIP"
           fi
 
-          git commit -m "$MESSAGE"
-          git push
+      # ==================================================
+      # PUSH USING GH_PAT
+      # ==================================================
+      - name: Push changes
+        shell: bash
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$GH_PAT" ]; then
+            echo "::error::GH_PAT is missing."
+            exit 1
+          fi
+
+          git remote set-url origin \
+            "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
           echo ""
           echo "========================================"
           echo "SUCCESS"
+          echo "========================================"
           echo "Operation: ${{ inputs.operation }}"
+          echo "Branch: ${GITHUB_REF_NAME}"
           echo "========================================"
