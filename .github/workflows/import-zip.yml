@@ -1,244 +1,278 @@
-name: Import Project ZIP
+name: Portfolio ZIP Manager
 
 on:
   workflow_dispatch:
     inputs:
-      operation:
-        description: "Choose an operation"
+      action:
+        description: "Choose what to do"
         required: true
-        default: "import"
         type: choice
         options:
-          - clean
           - import
+          - clean
+        default: import
 
 permissions:
   contents: write
 
 jobs:
-  project-manager:
+  manage-portfolio:
     runs-on: ubuntu-latest
 
     steps:
-      # ==================================================
-      # CHECKOUT
-      # ==================================================
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_PAT }}
 
-      # ==================================================
-      # CLEAN
-      #
-      # Deletes everything except:
-      #   1. .github/workflows/
-      #   2. ZIP files in repository root
-      #
-      # ZIP files are NOT extracted or deleted.
-      # ==================================================
-      - name: Clean repository
-        if: ${{ inputs.operation == 'clean' }}
-        shell: bash
+      - name: Show repository state
         run: |
-          set -euo pipefail
-
-          echo "Cleaning repository..."
-
-          # Delete everything at repository root except .git, .github and ZIP files.
-          find . -mindepth 1 -maxdepth 1 \
-            ! -name ".git" \
-            ! -name ".github" \
-            ! -iname "*.zip" \
-            -exec rm -rf {} +
-
-          # Keep only .github/workflows inside .github.
-          if [ -d ".github" ]; then
-            find .github -mindepth 1 -maxdepth 1 \
-              ! -name "workflows" \
-              -exec rm -rf {} +
-          fi
-
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Branch: $GITHUB_REF_NAME"
+          echo "Action: ${{ inputs.action }}"
           echo ""
-          echo "Cleanup complete."
-          echo "Preserved:"
-          echo "  .github/workflows/"
-          echo "  ZIP files in repository root"
-
-          echo ""
-          echo "Remaining files:"
-          find . -maxdepth 3 -type f \
-            ! -path "./.git/*" \
+          echo "Files:"
+          find . -maxdepth 2 -type f \
+            ! -path './.git/*' \
             | sort
 
-      # ==================================================
-      # FIND ZIP
-      # ==================================================
-      - name: Find ZIP
-        if: ${{ inputs.operation == 'import' }}
+      # ---------------------------------------------------------
+      # CLEAN
+      # ---------------------------------------------------------
+      - name: Clean old portfolio
+        if: inputs.action == 'clean'
+        shell: bash
+        run: |
+          set -e
+
+          echo "Cleaning old portfolio files..."
+
+          # Keep Git metadata and this workflow.
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            ! -name '*.zip' \
+            -exec rm -rf {} +
+
+          echo "Clean completed."
+
+      # ---------------------------------------------------------
+      # IMPORT
+      # ---------------------------------------------------------
+      - name: Find portfolio ZIP
+        if: inputs.action == 'import'
         id: find_zip
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
           mapfile -t ZIPS < <(
-            find . -maxdepth 1 \
-              -type f \
-              -iname "*.zip" \
-              -print
+            find . -maxdepth 1 -type f -iname '*.zip' \
+            -printf '%f\n' | sort
           )
 
           if [ "${#ZIPS[@]}" -eq 0 ]; then
-            echo "::error::No ZIP file found in repository root."
+            echo "::error::No ZIP file found in the repository root."
+            echo "Upload your portfolio ZIP to the repository root first."
             exit 1
           fi
 
           if [ "${#ZIPS[@]}" -gt 1 ]; then
-            echo "::error::More than one ZIP file found."
-            echo "Please keep only one ZIP before running Import."
-            printf '%s\n' "${ZIPS[@]}"
+            echo "::error::More than one ZIP file was found:"
+            printf ' - %s\n' "${ZIPS[@]}"
+            echo "Keep only ONE portfolio ZIP in the repository root."
             exit 1
           fi
 
-          ZIP="${ZIPS[0]}"
+          ZIP_NAME="${ZIPS[0]}"
 
-          echo "Found: $ZIP"
-          echo "ZIP=$ZIP" >> "$GITHUB_OUTPUT"
+          echo "ZIP found: $ZIP_NAME"
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_OUTPUT"
 
-      # ==================================================
-      # EXTRACT ZIP
-      # ==================================================
-      - name: Extract ZIP
-        if: ${{ inputs.operation == 'import' }}
+      - name: Prepare import workspace
+        if: inputs.action == 'import'
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
-          rm -rf /tmp/project
-          mkdir -p /tmp/project
+          rm -rf .portfolio-import
+          mkdir -p .portfolio-import
 
-          unzip -q -o \
-            "${{ steps.find_zip.outputs.ZIP }}" \
-            -d /tmp/project
+          echo "Workspace prepared."
 
-          echo "ZIP extracted successfully."
+      - name: Extract portfolio ZIP
+        if: inputs.action == 'import'
+        shell: bash
+        env:
+          ZIP_NAME: ${{ steps.find_zip.outputs.zip_name }}
+        run: |
+          set -e
 
-      # ==================================================
-      # DETECT PROJECT ROOT
-      # ==================================================
-      - name: Detect project root
-        if: ${{ inputs.operation == 'import' }}
-        id: project_root
+          echo "Extracting: $ZIP_NAME"
+
+          unzip -q "$ZIP_NAME" -d .portfolio-import
+
+          echo "Extracted files:"
+          find .portfolio-import -maxdepth 3 -type f | sort | head -200
+
+      - name: Locate portfolio root
+        if: inputs.action == 'import'
+        id: locate
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
-          ROOT="/tmp/project"
+          ROOT=".portfolio-import"
 
-          # ZIP contains project files directly.
-          if [ -f "$ROOT/main.py" ] || \
-             [ -f "$ROOT/package.json" ] || \
-             [ -f "$ROOT/requirements.txt" ] || \
-             [ -d "$ROOT/app" ] || \
-             [ -d "$ROOT/src" ] || \
-             [ -d "$ROOT/tests" ] || \
-             [ -d "$ROOT/.github" ]; then
-
-            echo "ROOT=$ROOT" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          # ZIP contains one top-level project folder.
+          # If ZIP contains one top-level directory, use it.
           mapfile -t DIRS < <(
-            find "$ROOT" \
-              -mindepth 1 \
-              -maxdepth 1 \
-              -type d
+            find .portfolio-import -mindepth 1 -maxdepth 1 -type d \
+            ! -name '.git' \
+            -printf '%p\n'
           )
 
           mapfile -t FILES < <(
-            find "$ROOT" \
-              -mindepth 1 \
-              -maxdepth 1 \
-              -type f
+            find .portfolio-import -mindepth 1 -maxdepth 1 -type f \
+            -printf '%p\n'
           )
 
-          if [ "${#DIRS[@]}" -eq 1 ] && \
-             [ "${#FILES[@]}" -eq 0 ]; then
-
-            echo "ROOT=${DIRS[0]}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ROOT=$ROOT" >> "$GITHUB_OUTPUT"
+          if [ "${#DIRS[@]}" -eq 1 ] && [ "${#FILES[@]}" -eq 0 ]; then
+            ROOT="${DIRS[0]}"
           fi
 
-      # ==================================================
-      # IMPORT EVERYTHING
-      #
-      # .github is NOT excluded.
-      # Existing files with the same path are replaced.
-      # New files are added.
-      # ==================================================
-      - name: Import project
-        if: ${{ inputs.operation == 'import' }}
+          echo "Portfolio root: $ROOT"
+          echo "portfolio_root=$ROOT" >> "$GITHUB_OUTPUT"
+
+      - name: Validate portfolio
+        if: inputs.action == 'import'
+        shell: bash
+        env:
+          ROOT: ${{ steps.locate.outputs.portfolio_root }}
+        run: |
+          set -e
+
+          echo "Validating portfolio..."
+
+          if [ ! -f "$ROOT/package.json" ]; then
+            echo "::error::package.json was not found."
+            echo "The uploaded ZIP does not appear to contain the portfolio project."
+            exit 1
+          fi
+
+          if [ ! -f "$ROOT/index.html" ]; then
+            echo "::error::index.html was not found."
+            echo "The uploaded ZIP does not appear to contain the portfolio project."
+            exit 1
+          fi
+
+          echo "Validation passed."
+
+      - name: Remove old portfolio
+        if: inputs.action == 'import'
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
-          ROOT="${{ steps.project_root.outputs.ROOT }}"
+          echo "Removing old portfolio files..."
 
-          rsync -a \
-            --exclude=".git/" \
-            "$ROOT/" ./
+          find . -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name '.github' \
+            ! -name '*.zip' \
+            ! -name '.portfolio-import' \
+            -exec rm -rf {} +
 
-          echo "Project imported successfully."
+          echo "Old portfolio removed."
 
-      # ==================================================
-      # DELETE ZIP FILES
-      # ==================================================
-      - name: Delete ZIP files
-        if: ${{ inputs.operation == 'import' }}
+      - name: Import new portfolio
+        if: inputs.action == 'import'
+        shell: bash
+        env:
+          ROOT: ${{ steps.locate.outputs.portfolio_root }}
+        run: |
+          set -e
+
+          echo "Importing new portfolio..."
+
+          cp -a "$ROOT"/. .
+
+          echo "New portfolio imported."
+
+      - name: Protect GitHub workflow
+        if: inputs.action == 'import'
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
 
-          find . -maxdepth 1 \
-            -type f \
-            -iname "*.zip" \
-            -delete
+          # Never allow the uploaded ZIP to replace this management workflow.
+          git checkout -- .github/workflows/import-zip.yml 2>/dev/null || true
 
-          echo "All ZIP files deleted."
+          # Remove imported Git metadata if the ZIP contained it.
+          rm -rf .git
 
-      # ==================================================
-      # COMMIT AND PUSH
-      # ==================================================
-      - name: Commit and push
+          # Restore repository metadata because the previous command above
+          # would remove the checkout's Git directory.
+          git init -q
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q origin "$GITHUB_REF_NAME"
+          git checkout -q -B "$GITHUB_REF_NAME" "origin/$GITHUB_REF_NAME"
+
+          echo "Workflow protection completed."
+
+      - name: Remove temporary files
+        if: inputs.action == 'import'
         shell: bash
         run: |
-          set -euo pipefail
+          set -e
+
+          rm -rf .portfolio-import
+
+          find . -maxdepth 1 -type f -iname '*.zip' -delete
+
+          echo "Temporary files removed."
+
+      # ---------------------------------------------------------
+      # SHOW RESULT
+      # ---------------------------------------------------------
+      - name: Show final files
+        shell: bash
+        run: |
+          echo "Final repository:"
+          echo ""
+
+          find . -maxdepth 2 -type f \
+            ! -path './.git/*' \
+            | sort
+
+      # ---------------------------------------------------------
+      # COMMIT
+      # ---------------------------------------------------------
+      - name: Commit changes
+        shell: bash
+        run: |
+          set -e
 
           git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add -A
 
           if git diff --cached --quiet; then
-            echo "No changes to commit."
+            echo "No changes detected."
             exit 0
           fi
 
-          if [ "${{ inputs.operation }}" = "clean" ]; then
-            MESSAGE="Clean repository"
+          if [ "${{ inputs.action }}" = "import" ]; then
+            git commit -m "chore: import portfolio update"
           else
-            MESSAGE="Import project from ZIP"
+            git commit -m "chore: clean portfolio repository"
           fi
 
-          git commit -m "$MESSAGE"
-          git push
+      - name: Push changes
+        shell: bash
+        run: |
+          set -e
 
-          echo ""
-          echo "========================================"
-          echo "SUCCESS"
-          echo "Operation: ${{ inputs.operation }}"
-          echo "========================================"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+          echo "Changes pushed successfully."
