@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sudiptokumar.vercel.app/sitemap.xml
