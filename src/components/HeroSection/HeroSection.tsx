@@ -4,7 +4,6 @@ import TechStackSection from "../TechStackSection/TechStackSection";
 import { Button } from "../lightswind/button";
 import { Badge } from "../lightswind/badge";
 import { HangingIdCard } from "../lightswind/HangingIdCard";
-import { AuroraTextEffect } from "../lightswind/aurora-text-effect";
 import { DotPattern } from "../lightswind/dot-pattern";
 
 const links = [
@@ -28,19 +27,13 @@ const backgroundIcons = [
 ];
 
 export const HeroSection = () => {
-  const go = (id: string) => {
-    const target = document.getElementById(id);
-    if (!target) return;
-    const headerOffset = window.innerWidth < 768 ? 88 : 112;
-    const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
-    window.scrollTo({ top, behavior: "smooth" });
-  };
+  const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return (
     <section id="hero" className="relative min-h-[100svh] flex flex-col pt-28 sm:pt-32 md:pt-32 overflow-hidden bg-background scroll-mt-32">
       <DotPattern width={16} height={16} cx={1} cy={1} cr={1} glow />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 w-full flex-1 flex flex-col md:flex-row items-center justify-center gap-9 sm:gap-12 md:gap-20 pb-10 sm:pb-12">
-        <motion.div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-0" initial={false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+        <motion.div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left pt-0" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="mb-6">
             <Badge variant="outline" size="lg" className="gap-2.5 py-1.5 px-4 glass-panel border-foreground/10">
               <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" /></span>
@@ -50,13 +43,7 @@ export const HeroSection = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }} className="mb-4 text-center md:text-left">
             <p className="text-[11px] sm:text-sm uppercase tracking-[0.22em] sm:tracking-[0.25em] text-muted-foreground mb-3">Finance & Banking · BBA · PSTU</p>
-            <h1 className="text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl font-bold tracking-tight mb-2 leading-none">
-              <span className="block">Hi, I'm</span>
-              <span className="block hero-name-wrap">
-                <span className="block dark:hidden hero-name-gradient-light">Sudipto Kumar</span>
-                <span className="hidden dark:block"><AuroraTextEffect text="Sudipto Kumar" fontSize="clamp(3rem, 6.5vw, 5.5rem)" className="bg-transparent overflow-visible p-0 justify-start" textClassName="bg-gradient-to-r from-cyan-400 via-purple-400 to-sky-300 bg-clip-text text-transparent pb-2 font-extrabold" /></span>
-              </span>
-            </h1>
+            <h1 className="text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl font-bold tracking-tight mb-2 leading-none">Hi, I'm <span className="text-gradient-primary inline-block font-extrabold text-[clamp(3rem,6.5vw,5.5rem)] leading-none tracking-tight pb-2">Sudipto Kumar</span></h1>
           </motion.div>
 
           <motion.p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}>I'm Sudipto Kumar, a BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I build practical digital products, websites, AI-assisted workflows, Telegram automation systems, and business-focused technology projects.</motion.p>

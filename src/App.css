@@ -27,7 +27,7 @@ body { margin: 0; }
 .field-label { display: block; font-size: .78rem; font-weight: 600; margin-bottom: .35rem; }
 .field { width: 100%; border: 1px solid var(--border); background: rgba(127,127,127,.07); border-radius: 14px; padding: .8rem 1rem; color: #0f172a; outline: none; }
 .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,92,246,.12); }
-#contact .field::placeholder { color: #64748b; opacity: 1; }
+#contact .field::placeholder { color: #94a3b8; opacity: .72; }
 .dark #contact .field { color: var(--fg); background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.1); }
 .dark #contact .field::placeholder { color: #a1a1aa; opacity: .8; }
 .dark #contact .field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(139,92,246,.18); }

@@ -7,11 +7,10 @@ import { ServicesSection } from "./components/ServicesSection/ServicesSection";
 import { ProjectsSection } from "./components/ProjectsSection/ProjectsSection";
 import { EducationSection } from "./components/EducationSection/EducationSection";
 import { CareerTimeline } from "./components/CareerSection/CareerTimeline";
-import TestimonialsSection from "./components/TestimonialsSection/TestimonialsSection";
 import { ContactSection } from "./components/ContactSection/ContactSection";
 import { Footer } from "./components/Footer/Footer";
 import ReactLenis from "lenis/react";
-import { Home, User, GraduationCap, Briefcase, FolderKanban, Send, MessageSquare } from "lucide-react";
+import { Home, User, GraduationCap, Briefcase, FolderKanban, Send } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import Dock from "./components/lightswind/dock";
@@ -42,10 +41,9 @@ function App() {
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (!el) return;
-    const headerOffset = window.innerWidth < 768 ? 88 : 112;
-    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-    window.scrollTo({ top, behavior: "smooth" });
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   const dockItems = [
@@ -54,7 +52,6 @@ function App() {
     { icon: <Briefcase size={20} />, label: "Career", onClick: () => scrollToSection("career") },
     { icon: <FolderKanban size={20} />, label: "Projects", onClick: () => scrollToSection("projects") },
     { icon: <GraduationCap size={20} />, label: "Education", onClick: () => scrollToSection("education") },
-    { icon: <MessageSquare size={20} />, label: "Perspectives", onClick: () => scrollToSection("testimonials") },
     { icon: <Send size={20} />, label: "Contact", onClick: () => scrollToSection("contact") },
   ];
 
@@ -71,7 +68,6 @@ function App() {
           <ProjectsSection />
           <CareerTimeline />
           <EducationSection />
-          <TestimonialsSection />
           <ContactSection />
         </main>
 
