@@ -4,6 +4,7 @@ import TechStackSection from "../TechStackSection/TechStackSection";
 import { Button } from "../lightswind/button";
 import { Badge } from "../lightswind/badge";
 import { HangingIdCard } from "../lightswind/HangingIdCard";
+import { AuroraTextEffect } from "../lightswind/aurora-text-effect";
 import { DotPattern } from "../lightswind/dot-pattern";
 
 const links = [
@@ -52,7 +53,17 @@ export const HeroSection = () => {
             <p className="text-[11px] sm:text-sm uppercase tracking-[0.22em] sm:tracking-[0.25em] text-muted-foreground mb-3">Finance & Banking · BBA · PSTU</p>
             <h1 className="font-bold tracking-tight mb-2 leading-none">
               <span className="block text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl">Hi, I'm</span>
-              <span className="hero-name-gradient block font-extrabold text-[clamp(3rem,6.5vw,5.5rem)] leading-none tracking-tight pb-2">Sudipto Kumar</span>
+              <span className="block hero-name-wrap">
+                <span className="hero-name-gradient block font-extrabold text-[clamp(3rem,6.5vw,5.5rem)] leading-none tracking-tight pb-2 dark:hidden">Sudipto Kumar</span>
+                <span className="hidden dark:inline-flex hero-name-aurora align-baseline" aria-label="Sudipto Kumar">
+                  <AuroraTextEffect
+                    text="Sudipto Kumar"
+                    fontSize="clamp(3rem,6.5vw,5.5rem)"
+                    className="bg-transparent overflow-visible p-0"
+                    textClassName="pb-2 font-extrabold"
+                  />
+                </span>
+              </span>
             </h1>
           </motion.div>
 
