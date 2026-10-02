@@ -29,6 +29,8 @@ env:
   PRESERVE_FILES: ""
 
   # Make a backup tag before the repository is cleaned ("true" or "false").
+  # Only the newest backup tag is kept. Older backup tags are deleted
+  # every time a new one is made.
   # To go back later, use the tag name shown in the run summary.
   BACKUP_TAG: "true"
 
@@ -166,6 +168,7 @@ jobs:
       # ==================================================
       # BACKUP TAG
       # A bookmark of the repository before it is cleaned.
+      # After the new tag is saved, all older backup tags are deleted.
       # ==================================================
       - name: Create backup tag
         if: steps.find.outputs.found == 'true' && env.BACKUP_TAG == 'true'
@@ -179,8 +182,23 @@ jobs:
           if git push origin "refs/tags/$TAG"; then
             echo "tag=$TAG" >> "$GITHUB_OUTPUT"
             echo "Backup tag created: $TAG"
+
+            # Remove every older backup tag. Only the new one stays.
+            git ls-remote --tags --refs origin 'refs/tags/backup-before-import-*' \
+              | awk '{print $2}' \
+              | sed 's|^refs/tags/||' \
+              | while read -r OLD; do
+                  if [ "$OLD" = "$TAG" ]; then
+                    continue
+                  fi
+                  if git push origin --delete "refs/tags/$OLD"; then
+                    echo "Removed old backup tag: $OLD"
+                  else
+                    echo "::warning::Could not remove old backup tag: $OLD"
+                  fi
+                done
           else
-            echo "::warning::Could not push the backup tag. Continuing without it."
+            echo "::warning::Could not push the backup tag. Old backup tags are kept."
           fi
 
       # ==================================================
