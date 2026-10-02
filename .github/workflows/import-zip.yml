@@ -974,6 +974,7 @@ jobs:
           KEPT=0
           DELETED=0
           FAILED=0
+          LAST_ERROR=""
 
           while read -r id; do
             if [ -z "$id" ]; then
@@ -986,14 +987,18 @@ jobs:
               continue
             fi
 
-            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" \
-              -f state=inactive > /dev/null 2>&1 || true
+            # Show the real GitHub answer if something goes wrong.
+            if ! OUT="$(gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" \
+                -f state=inactive 2>&1)"; then
+              echo "Deployment $id: could not set inactive: $OUT"
+            fi
 
-            if gh api -X DELETE "repos/$GITHUB_REPOSITORY/deployments/$id" > /dev/null 2>&1; then
+            if OUT="$(gh api -X DELETE "repos/$GITHUB_REPOSITORY/deployments/$id" 2>&1)"; then
               DELETED=$((DELETED + 1))
             else
               FAILED=$((FAILED + 1))
-              echo "::warning::Could not delete deployment $id"
+              echo "::error::Deployment $id was NOT deleted. GitHub says: $OUT"
+              LAST_ERROR="$OUT"
             fi
           done <<< "$IDS"
 
@@ -1012,5 +1017,14 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [ "$FAILED" -gt 0 ]; then
-            echo "::warning::$FAILED deployment(s) could not be deleted (GitHub may block the active one)."
+            {
+              echo ""
+              echo "**Some deployments were not deleted.** GitHub says:"
+              echo ""
+              echo '```'
+              echo "$LAST_ERROR"
+              echo '```'
+              echo "If it says \"Resource not accessible\" or 403, add a GH_PAT secret (see notes)."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
           fi
