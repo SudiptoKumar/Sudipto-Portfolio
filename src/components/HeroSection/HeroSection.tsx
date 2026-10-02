@@ -4,6 +4,7 @@ import TechStackSection from "../TechStackSection/TechStackSection";
 import { Button } from "../lightswind/button";
 import { Badge } from "../lightswind/badge";
 import { HangingIdCard } from "../lightswind/HangingIdCard";
+import { AuroraTextEffect } from "../lightswind/aurora-text-effect";
 import { DotPattern } from "../lightswind/dot-pattern";
 
 const links = [
@@ -30,7 +31,6 @@ export const HeroSection = () => {
   const go = (id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
-
     const headerOffset = window.innerWidth < 768 ? 88 : 112;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });
@@ -48,11 +48,14 @@ export const HeroSection = () => {
             </Badge>
           </motion.div>
 
-          <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }} className="mb-4 text-center md:text-left">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }} className="mb-4 text-center md:text-left">
             <p className="text-[11px] sm:text-sm uppercase tracking-[0.22em] sm:tracking-[0.25em] text-muted-foreground mb-3">Finance & Banking · BBA · PSTU</p>
             <h1 className="text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl font-bold tracking-tight mb-2 leading-none">
-              <span>Hi, I'm </span>
-              <span className="hero-name-gradient">Sudipto Kumar</span>
+              <span className="block">Hi, I'm</span>
+              <span className="block hero-name-wrap">
+                <span className="block dark:hidden hero-name-gradient-light">Sudipto Kumar</span>
+                <span className="hidden dark:block"><AuroraTextEffect text="Sudipto Kumar" fontSize="clamp(3rem, 6.5vw, 5.5rem)" className="bg-transparent overflow-visible p-0 justify-start" textClassName="bg-gradient-to-r from-cyan-400 via-purple-400 to-sky-300 bg-clip-text text-transparent pb-2 font-extrabold" /></span>
+              </span>
             </h1>
           </motion.div>
 
@@ -69,7 +72,7 @@ export const HeroSection = () => {
           </motion.div>
         </motion.div>
 
-        <motion.div className="flex-1 w-full max-w-md relative flex justify-center items-center py-2" initial={false} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}>
+        <motion.div className="flex-1 w-full max-w-md relative flex justify-center items-center py-2" initial={{ opacity: 0, y: -20, filter: "blur(10px)" }} animate={{ opacity: 1, y: 0, filter: "blur(0px)" }} transition={{ delay: 0.4, duration: 1, ease: [0.16, 1, 0.3, 1] }}>
           <HangingIdCard name="Sudipto Kumar" role="BBA Student · Tech Enthusiast" badgeId="SUDIPTO" accentColor="#8b5cf6" ropeLength={75} ropeColor="#27272a" cardWidth="w-72 sm:w-80 md:w-84">
             <div className="flex flex-col h-full bg-card w-full">
               <div className="relative px-5 pt-7 pb-6 flex flex-col items-center bg-gradient-to-br from-[#7c3aed] via-[#a855f7] to-[#172554] text-white overflow-hidden">
@@ -82,7 +85,7 @@ export const HeroSection = () => {
               </div>
 
               <div className="p-5 flex flex-col items-center text-center bg-card text-card-foreground flex-1 gap-3">
-                <div><p className="text-xl font-extrabold tracking-tight text-foreground">Sudipto Kumar</p><div className="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold">BBA Student · Tech Enthusiast</div></div>
+                <div><h3 className="text-xl font-extrabold tracking-tight text-foreground">Sudipto Kumar</h3><div className="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold">BBA Student · Tech Enthusiast</div></div>
                 <div className="w-full border-t border-border/60 my-0.5" />
                 <div className="grid grid-cols-2 gap-2.5 w-full text-left bg-muted/40 p-3 rounded-xl border border-border/50">
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Specialty</span><span className="font-bold text-foreground text-xs leading-tight">Tech · Business</span></div>
@@ -90,7 +93,7 @@ export const HeroSection = () => {
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Education</span><span className="font-bold text-foreground text-xs">BBA Finance</span></div>
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Status</span><span className="font-bold text-emerald-500 text-xs">● Active</span></div>
                 </div>
-                <div className="flex flex-col items-center mt-auto pt-1"><img src="/assets/sudipto-contact-qr.png" alt="Contact QR code for Sudipto Kumar" width={112} height={112} loading="lazy" className="w-28 h-28 rounded-lg bg-white p-1" /></div>
+                <div className="flex flex-col items-center mt-auto pt-1"><img src="/assets/sudipto-contact-qr.png" alt="Contact QR code for Sudipto Kumar" className="w-28 h-28 rounded-lg bg-white p-1" /></div>
               </div>
             </div>
           </HangingIdCard>

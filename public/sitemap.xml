@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://sudiptokumar.vercel.app/</loc>
-    <lastmod>2026-10-02</lastmod>
+    <lastmod>2026-09-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-1x1.webp</image:loc><image:title>Sudipto Kumar</image:title><image:caption>Portrait of Sudipto Kumar, BBA student in Finance and Banking at PSTU</image:caption></image:image>
-    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-4x3.webp</image:loc><image:title>Sudipto Kumar</image:title></image:image>
-    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-16x9.webp</image:loc><image:title>Sudipto Kumar</image:title></image:image>
+    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-1x1.webp</image:loc></image:image>
+    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-4x3.webp</image:loc></image:image>
+    <image:image><image:loc>https://sudiptokumar.vercel.app/assets/sudipto-kumar-16x9.webp</image:loc></image:image>
   </url>
 </urlset>

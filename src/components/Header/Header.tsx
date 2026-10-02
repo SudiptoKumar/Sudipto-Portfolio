@@ -9,12 +9,12 @@ const navItems = [
   { name: "Education", href: "#education" },
   { name: "Career", href: "#career" },
   { name: "Projects", href: "#projects" },
-  { name: "Contact", href: "#contact" },
 ];
 
 export default function Header() {
   const [showHeader, setShowHeader] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -32,7 +32,6 @@ export default function Header() {
       setIsMobileMenuOpen(false);
       return;
     }
-
     const headerOffset = window.innerWidth < 768 ? 88 : 112;
     const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: "smooth" });

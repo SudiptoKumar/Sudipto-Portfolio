@@ -1,24 +1,46 @@
+# SEO Build v2026-09-29
 
-## 2026-10-02 - Initial-load / semantic H1 fix
+This release keeps the existing visual portfolio identity unchanged and strengthens the single-page personal-identity system.
 
-- Removed the duplicate static SEO-only homepage from `index.html` so the browser no longer shows a second page before React mounts.
-- Kept `#root` as a clean React mount point.
-- Made the visible `Sudipto Kumar` text part of the real homepage `<h1>`.
-- Removed the hidden-name/`aria-hidden` workaround from the Hero heading.
-- Prevented the outer Hero columns from starting at `opacity: 0`, reducing first-paint flicker while retaining the existing component-level entrance animations.
-- Preserved the existing single-page visual structure, navigation, metadata, JSON-LD, canonical URL, verification files, and portfolio content.
+## Identity
+- Primary identity: Sudipto Kumar
+- Hero tagline: `BBA Student · Tech Enthusiast`
+- Academic context: Finance & Banking · BBA · PSTU
+- Targeted query variants include the full-name and short-name forms for portfolio, website, BBA, Finance, Finance & Banking, PSTU, and projects.
+
+## Image identity
+- Existing SK favicon retained.
+- Personal portrait is the primary person image.
+- Added 1:1, 4:3, and 16:9 portrait assets.
+- Replaced the previous text-based OG preview with a photo-led preview containing no text overlay.
+- Added image sitemap entries for the portrait assets.
+
+## Structured data
+- WebSite
+- WebPage
+- ProfilePage
+- Person
+- ImageObject
+- Person `sameAs` links for confirmed profiles
+- `Person.image` points to the portrait variants
+
+## Search architecture
+- Single-page portfolio only.
+- No keyword doorway pages.
+- Vercel is the primary canonical search identity.
+- Netlify mirrors the same content/design and points its canonical to Vercel.
+
+## Deployment
+- Vercel build remains Vite + `/api/contact`.
+- Netlify build uses the same front-end and maps `/api/contact` to the Netlify function.
+- Both deployments use the same environment variable names for Telegram contact delivery.
 
 
-## v2 follow-up fixes
-- Project image width/height corrected to the real 600x450 (v1 guessed 1280x800).
-- Saved dark theme now restored before first paint (previously the choice was lost on reload; also removes a light flash).
-- Removed the `color-scheme` meta added in v1 (could mismatch the class-based theme).
-- Tech-stack icons now reserve 20x20 space.
-
-## v3
-- `dateModified` in the ProfilePage JSON-LD is now a full ISO 8601 datetime with timezone (`2026-10-02T09:30:00+06:00`) to clear the Rich Results "Invalid datetime value" warning. Update it whenever you make a meaningful content change.
-### UI reliability patch — 2026-10-02
-- Added a mobile-safe fallback for the Hero name so browser text-clipping issues cannot turn `Sudipto Kumar` into a blank gradient rectangle.
-- Kept the gradient treatment on larger screens.
-- Increased Contact form placeholder contrast and removed reduced placeholder opacity.
-- Unified section scrolling with a responsive fixed-header offset so Contact and other sections do not land underneath the floating header.
+## 2026-10-02 - Minimal parity bug-fix release
+- Rebuilt from the current GitHub source baseline to preserve all existing sections, navigation, cards, and visual content.
+- Fixed the semantic Hero H1 without removing the existing visual identity treatment.
+- Reduced first-paint Hero hiding without removing inner entrance animations.
+- Added a mobile-safe fallback for the Hero name to prevent gradient-block rendering.
+- Improved Contact form placeholder contrast.
+- Added a fixed-header offset to section navigation.
+- No sections or existing content were intentionally removed.

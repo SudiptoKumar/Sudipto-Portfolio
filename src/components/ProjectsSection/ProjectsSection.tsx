@@ -2,15 +2,15 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 const projects = [
-  ["Campus Duty", "Web Development", "/assets/project-1.webp", "https://campusduty.netlify.app/", "A student productivity web app for managing campus duties, tasks and schedules, built with React and Supabase."],
-  ["Study Campus OS", "Digital Product", "/assets/project-2.webp", null, "An AI-assisted study framework that turns raw academic material into exam-ready notes, revision sheets and practice content."],
-  ["StudyMart", "Web Development", "/assets/project-3.webp", "https://studymartbd.vercel.app/", "A single-owner digital product store covering storefront, payments and order workflows, built with React, TanStack Start and Supabase."],
-  ["Business Newsroom", "Automation", "/assets/project-4.webp", "https://t.me/BusinessNewsroom", "An automated Telegram channel publishing ranked, de-duplicated business and finance news."],
-  ["Gaming Newsroom", "Automation", "/assets/project-5.webp", "https://t.me/GamingNewsroom", "An automated Telegram channel publishing curated gaming news."],
-  ["Tech Newsroom", "Automation", "/assets/project-6.webp", "https://t.me/TheTechNewsroom", "An automated Telegram channel publishing curated technology news."],
-  ["Entertainment Newsroom", "Automation", "/assets/project-7.webp", "https://t.me/EntertainmentNewsroom", "An automated Telegram channel publishing curated entertainment news."],
-  ["Science Newsroom", "Automation", "/assets/project-8.webp", "https://t.me/ScienceNewsroom", "An automated Telegram channel publishing curated science news."],
-  ["Telegram News Automation", "Automation", "/assets/project-9.webp", null, "The Python, Telegram Bot API and GitHub Actions pipeline behind the newsroom channels: scoring, duplicate protection, image fallback and scheduled publishing."],
+  ["Campus Duty", "Web Development", "/assets/project-1.webp", "https://campusduty.netlify.app/"],
+  ["Study Campus OS", "Digital Product", "/assets/project-2.webp", null],
+  ["StudyMart", "Web Development", "/assets/project-3.webp", null],
+  ["Business Newsroom", "Automation", "/assets/project-4.webp", "https://t.me/BusinessNewsroom"],
+  ["Gaming Newsroom", "Automation", "/assets/project-5.webp", "https://t.me/GamingNewsroom"],
+  ["Tech Newsroom", "Automation", "/assets/project-6.webp", "https://t.me/TheTechNewsroom"],
+  ["Entertainment Newsroom", "Automation", "/assets/project-7.webp", "https://t.me/EntertainmentNewsroom"],
+  ["Science Newsroom", "Automation", "/assets/project-8.webp", "https://t.me/ScienceNewsroom"],
+  ["Telegram News Automation", "Automation", "/assets/project-9.webp", null],
 ] as const;
 
 export const ProjectsSection = () => (
@@ -22,8 +22,8 @@ export const ProjectsSection = () => (
     </motion.div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {projects.map(([title, category, image, href, description], i) => {
-        const linkProps = href ? { href, target: "_blank" as const, rel: "noopener noreferrer" as const } : {};
+      {projects.map(([title, category, image, href], i) => {
+        const linkProps = href ? { href, target: "_blank" as const, rel: "noreferrer" as const } : {};
         return (
           <motion.a
             key={title}
@@ -35,7 +35,7 @@ export const ProjectsSection = () => (
             className={`group glass-panel overflow-hidden rounded-3xl border border-foreground/10 shadow-xl transition-colors duration-500 ${href ? "hover:border-primary/30" : "cursor-default"}`}
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-neutral-950">
-              <img src={image} alt={`${title} project preview by Sudipto Kumar`} width={600} height={450} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
+              <img src={image} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
                 <span className="text-[11px] uppercase tracking-widest text-white/85 bg-black/25 backdrop-blur rounded-full px-3 py-1 border border-white/10">{category}</span>
@@ -48,7 +48,7 @@ export const ProjectsSection = () => (
             </div>
             <div className="p-5">
               <h3 className="font-bold text-lg text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{description}</p>{href && <p className="text-xs font-semibold text-primary mt-3">Open project ↗</p>}
+              <p className="text-sm text-muted-foreground mt-1">{href ? "Open project or channel ↗" : "Project details coming soon."}</p>
             </div>
           </motion.a>
         );

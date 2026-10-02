@@ -36,8 +36,6 @@ const TechStackSection = () => {
               <img
                 src={tech.icon}
                 alt={tech.name}
-                width={20}
-                height={20}
                 className="w-5 h-5 object-contain group-hover:scale-110 transition-transform duration-300"
                 loading="lazy"
                 decoding="async"
