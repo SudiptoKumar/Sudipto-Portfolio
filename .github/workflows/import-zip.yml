@@ -1,10 +1,11 @@
 name: Import Project ZIP
 
-# Starts by itself when a ZIP file is pushed to the repository root on main.
+# Starts by itself when a ZIP file is pushed to the repository root.
+# Works on any branch and with any project type (Python, TypeScript, and so on).
 # No manual inputs. No GH_PAT needed (see notes below about .github/workflows).
 on:
   push:
-    branches: [main]
+    branches: ["**"]
     paths:
       - "*.zip"
       - "*.ZIP"
@@ -26,6 +27,21 @@ env:
   # Optional: files that must survive every import (space separated).
   # Example: PRESERVE_FILES: "news_state.json posted_urls.txt"
   PRESERVE_FILES: ""
+
+  # Make a backup tag before the repository is cleaned ("true" or "false").
+  # To go back later, use the tag name shown in the run summary.
+  BACKUP_TAG: "true"
+
+  # Old run history: keep this many newest finished runs.
+  KEEP_RUNS: "5"
+  # Delete only runs older than this many days. 0 = no age limit.
+  DELETE_RUNS_OLDER_THAN_DAYS: "0"
+
+  # Start these workflows after a successful import (space separated).
+  # Example: TRIGGER_WORKFLOWS: "build.yml deploy.yml"
+  # Each one needs "workflow_dispatch:" in its "on:" list.
+  TRIGGER_WORKFLOWS: ""
+
   # "true" only if you added a GH_PAT secret. Without it, GITHUB_TOKEN is used.
   PAT_AVAILABLE: ${{ secrets.GH_PAT != '' }}
 
@@ -146,6 +162,26 @@ jobs:
               echo "Keeping $f"
             fi
           done
+
+      # ==================================================
+      # BACKUP TAG
+      # A bookmark of the repository before it is cleaned.
+      # ==================================================
+      - name: Create backup tag
+        if: steps.find.outputs.found == 'true' && env.BACKUP_TAG == 'true'
+        id: backup
+        run: |
+          set -euo pipefail
+
+          TAG="backup-before-import-${GITHUB_RUN_ID}"
+          git tag "$TAG"
+
+          if git push origin "refs/tags/$TAG"; then
+            echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+            echo "Backup tag created: $TAG"
+          else
+            echo "::warning::Could not push the backup tag. Continuing without it."
+          fi
 
       # ==================================================
       # 6. CLEAN REPOSITORY (all except .git)
@@ -289,13 +325,16 @@ jobs:
           echo "Deleted $ZIP"
 
       # ==================================================
-      # 12 + 13. COMMIT AND PUSH TO MAIN
+      # 12 + 13. COMMIT AND PUSH TO THE SAME BRANCH
       # Runs only if every step before it passed.
+      # Also writes a summary report on the run page.
       # ==================================================
       - name: Commit and push
         if: steps.find.outputs.found == 'true'
+        id: push
         env:
           ZIP: ${{ steps.find.outputs.zip }}
+          BACKUP: ${{ steps.backup.outputs.tag }}
         run: |
           set -euo pipefail
 
@@ -306,19 +345,52 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Nothing changed"
+              echo ""
+              echo "The ZIP had the same files as the repository."
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
 
+          STATUS="$(git diff --cached --name-status --no-renames)"
+          ADDED="$(printf '%s\n' "$STATUS" | grep -c '^A' || true)"
+          CHANGED="$(printf '%s\n' "$STATUS" | grep -c '^M' || true)"
+          REMOVED="$(printf '%s\n' "$STATUS" | grep -c '^D' || true)"
+
+          {
+            echo "### Import report"
+            echo ""
+            echo "| Item | Value |"
+            echo "| --- | --- |"
+            echo "| ZIP | ${ZIP#./} |"
+            echo "| Branch | $GITHUB_REF_NAME |"
+            echo "| Files added | $ADDED |"
+            echo "| Files changed | $CHANGED |"
+            echo "| Files removed | $REMOVED |"
+            echo "| Backup tag | ${BACKUP:-none} |"
+            echo ""
+            echo "<details><summary>File list (first 200)</summary>"
+            echo ""
+            echo '```'
+            printf '%s\n' "$STATUS" | sed -n '1,200p'
+            echo '```'
+            echo "</details>"
+          } >> "$GITHUB_STEP_SUMMARY"
+
           # [skip ci] stops this push from starting the workflow again.
           git commit -m "Import project from ${ZIP#./} [skip ci]"
-          git push origin HEAD:main
+          git push origin "HEAD:${GITHUB_REF_NAME}"
 
-          echo "Import finished and pushed to main."
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "Import finished and pushed to ${GITHUB_REF_NAME}."
 
       # ==================================================
       # CLEAN OLD ACTION RUN HISTORY
       # Runs only after a successful import and push.
-      # Deletes all finished runs of every workflow.
+      # Keeps the newest KEEP_RUNS finished runs.
+      # If DELETE_RUNS_OLDER_THAN_DAYS is above 0, only older runs go.
       # The current run stays (a running job cannot delete itself).
       # A problem here never undoes the import.
       # ==================================================
@@ -330,22 +402,66 @@ jobs:
         run: |
           set -uo pipefail
 
-          IDS="$(gh api --paginate \
-            "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&status=completed" \
-            --jq '.workflow_runs[].id')"
+          KEEP="${KEEP_RUNS:-5}"
+          DAYS="${DELETE_RUNS_OLDER_THAN_DAYS:-0}"
 
+          CUTOFF=0
+          if [ "$DAYS" -gt 0 ]; then
+            CUTOFF=$(( $(date +%s) - DAYS * 86400 ))
+          fi
+
+          ROWS="$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&status=completed" \
+            --jq '.workflow_runs[] | "\(.id) \(.created_at)"')"
+
+          SEEN=0
+          KEPT=0
           DELETED=0
           FAILED=0
 
-          for id in $IDS; do
-            if [ "$id" = "$GITHUB_RUN_ID" ]; then
+          while read -r id created; do
+            if [ -z "$id" ] || [ "$id" = "$GITHUB_RUN_ID" ]; then
               continue
             fi
+
+            SEEN=$((SEEN + 1))
+            if [ "$SEEN" -le "$KEEP" ]; then
+              KEPT=$((KEPT + 1))
+              continue
+            fi
+
+            if [ "$CUTOFF" -gt 0 ] && [ "$(date -d "$created" +%s)" -gt "$CUTOFF" ]; then
+              KEPT=$((KEPT + 1))
+              continue
+            fi
+
             if gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/runs/$id" > /dev/null 2>&1; then
               DELETED=$((DELETED + 1))
             else
               FAILED=$((FAILED + 1))
             fi
-          done
+          done <<< "$ROWS"
 
-          echo "Deleted $DELETED old runs. Could not delete $FAILED."
+          echo "Kept $KEPT runs. Deleted $DELETED old runs. Could not delete $FAILED."
+
+      # ==================================================
+      # START OTHER WORKFLOWS AFTER IMPORT (optional)
+      # Uses TRIGGER_WORKFLOWS. Leave it empty to skip.
+      # ==================================================
+      - name: Start other workflows
+        if: steps.push.outputs.changed == 'true' && env.TRIGGER_WORKFLOWS != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -uo pipefail
+          set -f
+
+          for wf in $TRIGGER_WORKFLOWS; do
+            if gh workflow run "$wf" --ref "$GITHUB_REF_NAME"; then
+              echo "Started: $wf"
+            else
+              echo "::warning::Could not start $wf. Does it have workflow_dispatch?"
+            fi
+          done
