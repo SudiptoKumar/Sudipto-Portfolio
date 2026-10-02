@@ -41,7 +41,3 @@ Vercel uses `vercel.json` with `npm run build` and publishes `dist`. Vercel auto
 The production URL, canonical URL, Open Graph URL/image URL, JSON-LD `WebSite` / `ProfilePage` / `Person` references, `robots.txt` sitemap URL, and XML sitemap all use `https://sudiptokumar.vercel.app` in this package.
 
 The Google Search Console HTML verification file is retained so the new Vercel URL can be verified as a separate URL-prefix property.
-
-### Reviews and testimonials
-
-The portfolio does not display sample or unverified testimonials. A review section can be added later when genuine, attributable reviews are received and approved for publication.

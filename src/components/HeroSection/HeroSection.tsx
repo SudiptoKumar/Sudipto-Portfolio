@@ -27,7 +27,14 @@ const backgroundIcons = [
 ];
 
 export const HeroSection = () => {
-  const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const go = (id: string) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const headerOffset = 96;
+    const targetY = Math.max(0, window.scrollY + el.getBoundingClientRect().top - headerOffset);
+    window.scrollTo({ top: targetY, behavior: "smooth" });
+  };
 
   return (
     <section id="hero" className="relative min-h-[100svh] flex flex-col pt-28 sm:pt-32 md:pt-32 overflow-hidden bg-background scroll-mt-32">
@@ -43,7 +50,10 @@ export const HeroSection = () => {
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }} className="mb-4 text-center md:text-left">
             <p className="text-[11px] sm:text-sm uppercase tracking-[0.22em] sm:tracking-[0.25em] text-muted-foreground mb-3">Finance & Banking · BBA · PSTU</p>
-            <h1 className="text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl font-bold tracking-tight mb-2 leading-none">Hi, I'm <span className="text-gradient-primary inline-block font-extrabold text-[clamp(3rem,6.5vw,5.5rem)] leading-none tracking-tight pb-2">Sudipto Kumar</span></h1>
+            <h1 className="font-bold tracking-tight mb-2 leading-none">
+              <span className="block text-[clamp(2.9rem,12vw,4.5rem)] md:text-7xl">Hi, I'm</span>
+              <span className="hero-name-gradient block font-extrabold text-[clamp(3rem,6.5vw,5.5rem)] leading-none tracking-tight pb-2">Sudipto Kumar</span>
+            </h1>
           </motion.div>
 
           <motion.p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}>I'm Sudipto Kumar, a BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I build practical digital products, websites, AI-assisted workflows, Telegram automation systems, and business-focused technology projects.</motion.p>

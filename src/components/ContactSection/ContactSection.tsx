@@ -47,7 +47,7 @@ export const ContactSection = () => {
             <p className="text-muted-foreground leading-relaxed mt-6 max-w-xl text-base md:text-lg">Have a project idea, collaboration, question, or just want to say hello? Send a message and it will reach me through the existing portfolio contact workflow.</p>
           </div>
 
-          <form onSubmit={submit} className="relative rounded-[1.5rem] md:rounded-[2rem] border border-foreground/10 bg-white p-5 sm:p-6 md:p-8 text-slate-900 shadow-2xl dark:bg-card dark:text-card-foreground dark:border-white/10 space-y-5">
+          <form onSubmit={submit} className="contact-form relative rounded-[1.5rem] md:rounded-[2rem] border p-5 sm:p-6 md:p-8 shadow-2xl space-y-5">
             <div className="grid sm:grid-cols-2 gap-4">
               <div><label className="field-label" htmlFor="contact-name">Your name</label><input id="contact-name" name="fullname" required maxLength={100} autoComplete="name" className="field" placeholder="Your name" /></div>
               <div><label className="field-label" htmlFor="contact-email">Your email</label><input id="contact-email" name="email" type="email" required maxLength={254} autoComplete="email" className="field" placeholder="you@example.com" /></div>
@@ -59,7 +59,7 @@ export const ContactSection = () => {
               {submitting ? "Sending Message..." : status.startsWith("Message sent") ? "Message Sent" : "Send Message"}
             </button>
             <AnimatePresence mode="wait">
-              {status && <motion.p key={status} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className={`text-sm text-center ${status.startsWith("Message sent") ? "text-emerald-600" : status.startsWith("Something went wrong") ? "text-rose-600" : "text-slate-500"}`} role="status">{status}</motion.p>}
+              {status && <motion.p key={status} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className={`text-sm text-center ${status.startsWith("Message sent") ? "text-emerald-600 dark:text-emerald-400" : status.startsWith("Something went wrong") ? "text-rose-600 dark:text-rose-400" : "text-muted-foreground"}`} role="status">{status}</motion.p>}
             </AnimatePresence>
           </form>
         </div>

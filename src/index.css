@@ -24,6 +24,14 @@
     --border: #e2e8f0;
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(0, 0, 0, 0.1);
+    --form-bg: #ffffff;
+    --form-field-bg: #f8fafc;
+    --form-field-fg: #0f172a;
+    --form-field-placeholder: #64748b;
+    --form-field-border: #dbe3ee;
+    --name-gradient-1: #7c3aed;
+    --name-gradient-2: #38bdf8;
+    --name-gradient-3: #4f46e5;
   }
 
   .dark {
@@ -37,6 +45,14 @@
     --border: #272832;
     --glass-bg: rgba(22, 23, 27, 0.6);
     --glass-border: rgba(255, 255, 255, 0.05);
+    --form-bg: #111318;
+    --form-field-bg: #171a22;
+    --form-field-fg: #fafafa;
+    --form-field-placeholder: #a1a1aa;
+    --form-field-border: #2d303a;
+    --name-gradient-1: #22d3ee;
+    --name-gradient-2: #a78bfa;
+    --name-gradient-3: #38bdf8;
   }
 
   body {
@@ -77,8 +93,37 @@
 }
 
 .text-gradient-primary {
-  background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
+  color: var(--name-gradient-2);
+  background: linear-gradient(135deg, var(--name-gradient-1) 0%, var(--name-gradient-2) 55%, var(--name-gradient-3) 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.hero-name-gradient {
+  display: inline-block;
+  color: var(--name-gradient-2);
+  background: linear-gradient(120deg, var(--name-gradient-1) 0%, var(--name-gradient-2) 48%, var(--name-gradient-3) 100%);
+  background-size: 220% 220%;
+  animation: name-gradient-shift 7s ease-in-out infinite;
+  will-change: background-position;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .text-gradient-primary,
+  .hero-name-gradient {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+@keyframes name-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-name-gradient {
+    animation: none;
+  }
 }
