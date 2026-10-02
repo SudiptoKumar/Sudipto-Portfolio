@@ -11,15 +11,7 @@ export interface AuroraTextEffectProps {
     third?: string;
     fourth?: string;
   };
-  blurAmount?:
-    | "blur-none"
-    | "blur-sm"
-    | "blur-md"
-    | "blur-lg"
-    | "blur-xl"
-    | "blur-2xl"
-    | "blur-3xl"
-    | string;
+  blurAmount?: string;
   animationSpeed?: {
     border?: number;
     first?: number;
@@ -30,112 +22,39 @@ export interface AuroraTextEffectProps {
 }
 
 /**
- * Aurora text visual effect.
- *
- * This component deliberately uses spans so it can be placed inside the
- * homepage H1 without creating a nested heading. The visible text itself
- * remains real DOM text for accessibility and SEO.
+ * Text-only Aurora effect. The animated color layer is clipped to the glyphs,
+ * so the effect can never paint a rectangular block over the Hero.
+ * The plain text layer remains as an always-visible fallback for accessibility,
+ * reduced-motion, and browsers without background-clip:text support.
  */
 export function AuroraTextEffect({
   text,
   className,
   textClassName,
   fontSize = "clamp(3rem, 8vw, 7rem)",
-  colors = {
-    first: "bg-cyan-400",
-    second: "bg-yellow-400",
-    third: "bg-green-400",
-    fourth: "bg-primarylw",
-  },
-  blurAmount = "blur-lg",
-  animationSpeed = {
-    border: 6,
-    first: 5,
-    second: 5,
-    third: 3,
-    fourth: 13,
-  },
 }: AuroraTextEffectProps) {
   return (
     <span
-      className={cn(
-        "relative inline-flex items-center justify-center overflow-visible align-baseline",
-        className,
-      )}
+      className={cn("relative inline-block align-baseline", className)}
+      style={{ fontSize }}
     >
       <span
         className={cn(
-          "relative z-0 font-extrabold tracking-tight text-white",
+          "relative z-0 block font-extrabold tracking-tight text-foreground",
           textClassName,
         )}
-        style={{ fontSize }}
       >
         {text}
       </span>
 
       <span
         aria-hidden="true"
-        className="absolute inset-0 z-10 pointer-events-none overflow-hidden mix-blend-darken"
+        className={cn(
+          "aurora-text-layer absolute inset-0 z-10 block font-extrabold tracking-tight pointer-events-none",
+          textClassName,
+        )}
       >
-        <span
-          className={cn(
-            "absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%/28%_25%_41%_37%] filter mix-blend-overlay",
-            colors.first,
-            blurAmount,
-          )}
-          style={{
-            animationName: "aurora-border, aurora-1",
-            animationDuration: `${animationSpeed.border}s, ${animationSpeed.first}s`,
-            animationTimingFunction: "ease-in-out, ease-in-out",
-            animationIterationCount: "infinite, infinite",
-            animationDirection: "normal, alternate",
-          }}
-        />
-
-        <span
-          className={cn(
-            "absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%/28%_25%_41%_37%] filter mix-blend-overlay",
-            colors.second,
-            blurAmount,
-          )}
-          style={{
-            animationName: "aurora-border, aurora-2",
-            animationDuration: `${animationSpeed.border}s, ${animationSpeed.second}s`,
-            animationTimingFunction: "ease-in-out, ease-in-out",
-            animationIterationCount: "infinite, infinite",
-            animationDirection: "normal, alternate",
-          }}
-        />
-
-        <span
-          className={cn(
-            "absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%/28%_25%_41%_37%] filter mix-blend-overlay",
-            colors.third,
-            blurAmount,
-          )}
-          style={{
-            animationName: "aurora-border, aurora-3",
-            animationDuration: `${animationSpeed.border}s, ${animationSpeed.third}s`,
-            animationTimingFunction: "ease-in-out, ease-in-out",
-            animationIterationCount: "infinite, infinite",
-            animationDirection: "normal, alternate",
-          }}
-        />
-
-        <span
-          className={cn(
-            "absolute w-[60vw] h-[60vw] rounded-[37%_29%_27%_27%/28%_25%_41%_37%] filter mix-blend-overlay",
-            colors.fourth,
-            blurAmount,
-          )}
-          style={{
-            animationName: "aurora-border, aurora-4",
-            animationDuration: `${animationSpeed.border}s, ${animationSpeed.fourth}s`,
-            animationTimingFunction: "ease-in-out, ease-in-out",
-            animationIterationCount: "infinite, infinite",
-            animationDirection: "normal, alternate",
-          }}
-        />
+        {text}
       </span>
     </span>
   );

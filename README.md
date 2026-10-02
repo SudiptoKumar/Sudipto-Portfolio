@@ -41,3 +41,6 @@ Vercel uses `vercel.json` with `npm run build` and publishes `dist`. Vercel auto
 The production URL, canonical URL, Open Graph URL/image URL, JSON-LD `WebSite` / `ProfilePage` / `Person` references, `robots.txt` sitemap URL, and XML sitemap all use `https://sudiptokumar.vercel.app` in this package.
 
 The Google Search Console HTML verification file is retained so the new Vercel URL can be verified as a separate URL-prefix property.
+
+## 2026-10-02 Hero Aurora correction
+The Hero name animation now clips the animated color layer to the `Sudipto Kumar` glyphs, preventing the previous full-rectangle rendering bug on mobile/dark mode. The name remains a real H1 text node with a visible fallback layer. The previously requested sample Community Perspectives section is not included.

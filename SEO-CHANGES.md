@@ -34,3 +34,8 @@ This release keeps the existing visual portfolio identity unchanged and strength
 - Vercel build remains Vite + `/api/contact`.
 - Netlify build uses the same front-end and maps `/api/contact` to the Netlify function.
 - Both deployments use the same environment variable names for Telegram contact delivery.
+
+
+## 2026-10-02 Theme/Aurora correction
+- Repaired the Hero Aurora name effect so animated color is clipped to the text glyphs and cannot render as a rectangle.
+- Removed the previously requested Community Perspectives/sample testimonials section and its navigation entry.

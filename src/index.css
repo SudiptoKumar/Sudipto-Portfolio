@@ -129,41 +129,48 @@
 }
 
 
-/* Dark-mode hero identity animation, restored from the previously working Aurora treatment. */
-@keyframes aurora-1 {
-  0% { top: 0; right: 0; }
-  50% { top: 100%; right: 75%; }
-  75% { top: 100%; right: 25%; }
-  100% { top: 0; right: 0; }
+/* Dark-mode hero identity animation. The gradient is clipped to the name glyphs. */
+.aurora-text-layer {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image:
+    radial-gradient(circle at 15% 55%, #22d3ee 0%, rgba(34, 211, 238, 0) 42%),
+    radial-gradient(circle at 82% 45%, #a78bfa 0%, rgba(167, 139, 250, 0) 42%),
+    radial-gradient(circle at 50% 80%, #f472b6 0%, rgba(244, 114, 182, 0) 38%),
+    linear-gradient(100deg, #38bdf8 0%, #a78bfa 42%, #f472b6 70%, #22d3ee 100%);
+  background-size: 210% 210%, 220% 220%, 240% 240%, 220% 220%;
+  background-position: 0% 50%, 100% 50%, 50% 100%, 0% 50%;
+  animation: hero-name-aurora-shift 7s ease-in-out infinite;
+  will-change: background-position, filter;
 }
-@keyframes aurora-2 {
-  0% { top: -50%; left: 0%; }
-  60% { top: 100%; left: 75%; }
-  85% { top: 100%; left: 25%; }
-  100% { top: -50%; left: 0%; }
-}
-@keyframes aurora-3 {
-  0% { bottom: 0; left: 0; }
-  40% { bottom: 100%; left: 75%; }
-  65% { bottom: 40%; left: 50%; }
-  100% { bottom: 0; left: 0; }
-}
-@keyframes aurora-4 {
-  0% { bottom: -50%; right: 0; }
-  50% { bottom: 0%; right: 40%; }
-  90% { bottom: 50%; right: 25%; }
-  100% { bottom: -50%; right: 0; }
-}
-@keyframes aurora-border {
-  0% { border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%; }
-  25% { border-radius: 47% 29% 39% 49% / 61% 19% 66% 26%; }
-  50% { border-radius: 57% 23% 47% 72% / 63% 17% 66% 33%; }
-  75% { border-radius: 28% 49% 29% 100% / 93% 20% 64% 25%; }
-  100% { border-radius: 37% 29% 27% 27% / 28% 25% 41% 37%; }
+
+@keyframes hero-name-aurora-shift {
+  0% {
+    background-position: 0% 50%, 100% 50%, 50% 100%, 0% 50%;
+    filter: hue-rotate(0deg) saturate(1.05);
+  }
+  25% {
+    background-position: 45% 35%, 55% 70%, 70% 30%, 35% 60%;
+    filter: hue-rotate(8deg) saturate(1.12);
+  }
+  50% {
+    background-position: 100% 50%, 0% 40%, 20% 70%, 100% 50%;
+    filter: hue-rotate(-4deg) saturate(1.18);
+  }
+  75% {
+    background-position: 55% 65%, 45% 30%, 85% 60%, 65% 40%;
+    filter: hue-rotate(12deg) saturate(1.1);
+  }
+  100% {
+    background-position: 0% 50%, 100% 50%, 50% 100%, 0% 50%;
+    filter: hue-rotate(0deg) saturate(1.05);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-name-aurora {
-    display: inline-flex;
+  .hero-name-aurora .aurora-text-layer {
+    animation: none;
   }
 }
