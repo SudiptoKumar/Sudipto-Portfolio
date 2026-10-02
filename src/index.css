@@ -82,3 +82,30 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+.hero-name-gradient {
+  display: inline-block;
+  background: linear-gradient(90deg, #7c3aed 0%, #0ea5e9 42%, #9333ea 72%, #4f46e5 100%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: hero-name-gradient-shift 8s ease-in-out infinite;
+}
+
+.dark .hero-name-gradient {
+  background: linear-gradient(90deg, #22d3ee 0%, #a78bfa 48%, #7dd3fc 100%);
+  background-size: 200% 100%;
+}
+
+@keyframes hero-name-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-name-gradient {
+    animation: none;
+  }
+}
