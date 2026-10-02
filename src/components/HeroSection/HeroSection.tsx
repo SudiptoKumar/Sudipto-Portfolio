@@ -27,7 +27,14 @@ const backgroundIcons = [
 ];
 
 export const HeroSection = () => {
-  const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const go = (id: string) => {
+    const target = document.getElementById(id);
+    if (!target) return;
+
+    const headerOffset = window.innerWidth < 768 ? 88 : 112;
+    const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
 
   return (
     <section id="hero" className="relative min-h-[100svh] flex flex-col pt-28 sm:pt-32 md:pt-32 overflow-hidden bg-background scroll-mt-32">

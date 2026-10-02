@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, type Variants, type MotionProps } from "framer-motion";
 import { Menu, X, UserRound } from "lucide-react";
-import { useLenis } from "lenis/react";
 import { ThemeToggle } from "../lightswind/theme-toggle";
 
 const navItems = [
@@ -16,8 +15,6 @@ const navItems = [
 export default function Header() {
   const [showHeader, setShowHeader] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const lenis = useLenis();
-
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -30,7 +27,15 @@ export default function Header() {
   }, []);
 
   const handleScrollTo = (id: string) => {
-    lenis?.scrollTo(id);
+    const target = document.querySelector(id);
+    if (!target) {
+      setIsMobileMenuOpen(false);
+      return;
+    }
+
+    const headerOffset = window.innerWidth < 768 ? 88 : 112;
+    const top = target.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: "smooth" });
     setIsMobileMenuOpen(false);
   };
 

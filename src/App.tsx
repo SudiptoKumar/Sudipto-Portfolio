@@ -41,9 +41,11 @@ function App() {
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (!el) return;
+
+    const headerOffset = window.innerWidth < 768 ? 88 : 112;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: "smooth" });
   };
 
   const dockItems = [

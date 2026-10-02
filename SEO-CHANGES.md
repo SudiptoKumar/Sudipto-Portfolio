@@ -17,3 +17,8 @@
 
 ## v3
 - `dateModified` in the ProfilePage JSON-LD is now a full ISO 8601 datetime with timezone (`2026-10-02T09:30:00+06:00`) to clear the Rich Results "Invalid datetime value" warning. Update it whenever you make a meaningful content change.
+### UI reliability patch — 2026-10-02
+- Added a mobile-safe fallback for the Hero name so browser text-clipping issues cannot turn `Sudipto Kumar` into a blank gradient rectangle.
+- Kept the gradient treatment on larger screens.
+- Increased Contact form placeholder contrast and removed reduced placeholder opacity.
+- Unified section scrolling with a responsive fixed-header offset so Contact and other sections do not land underneath the floating header.
