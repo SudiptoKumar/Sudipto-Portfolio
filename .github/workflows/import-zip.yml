@@ -168,6 +168,7 @@ jobs:
       # ==================================================
       # BACKUP TAG
       # A bookmark of the repository before it is cleaned.
+      # The new ZIP file is NOT included in the backup.
       # After the new tag is saved, all older backup tags are deleted.
       # ==================================================
       - name: Create backup tag
@@ -177,7 +178,28 @@ jobs:
           set -euo pipefail
 
           TAG="backup-before-import-${GITHUB_RUN_ID}"
-          git tag "$TAG"
+
+          # Make a backup commit that is the same as now, but without the
+          # new ZIP file. The ZIP is the upload, not part of the old project.
+          export GIT_AUTHOR_NAME="github-actions[bot]"
+          export GIT_AUTHOR_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
+          export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+          export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+
+          export GIT_INDEX_FILE="$RUNNER_TEMP/backup-index"
+          rm -f "$GIT_INDEX_FILE"
+          git read-tree HEAD
+
+          while IFS= read -r -d '' f; do
+            git rm -r -q --cached -- "$f"
+            echo "Not in backup: $f"
+          done < <(git ls-tree -z --name-only HEAD | grep -zi '\.zip$' || true)
+
+          BACKUP_TREE="$(git write-tree)"
+          BACKUP_COMMIT="$(git commit-tree "$BACKUP_TREE" -p HEAD -m "Backup before import $GITHUB_RUN_ID")"
+          unset GIT_INDEX_FILE
+
+          git tag "$TAG" "$BACKUP_COMMIT"
 
           if git push origin "refs/tags/$TAG"; then
             echo "tag=$TAG" >> "$GITHUB_OUTPUT"
