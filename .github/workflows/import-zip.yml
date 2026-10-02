@@ -14,7 +14,7 @@ name: Import Project ZIP
 #                      Leave "backup_tag" empty to use the newest backup tag.
 #        clean-repo    Delete all files (a backup tag is made first).
 #        clean-deploy  Delete the Deployments history.
-#      Every manual action needs the "confirm" box ticked.
+#      Just pick one and press Run. No other setting is needed.
 #
 # Manual actions add a NEW commit. Old history is never rewritten.
 # Files in .github/workflows and .keep-files are never removed by them.
@@ -28,36 +28,18 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "What to run"
+        description: "What do you want to do?"
         type: choice
         required: true
         options:
           - restore
           - clean-repo
           - clean-deploy
-      confirm:
-        description: "I understand. Tick this to run."
-        type: boolean
-        default: false
       backup_tag:
-        description: "restore only: tag name (empty = newest backup tag)"
+        description: "Only for restore: tag name. Leave empty = newest backup"
         type: string
         required: false
         default: ""
-      make_backup:
-        description: "clean-repo only: make a backup tag first"
-        type: boolean
-        default: true
-      environment:
-        description: "clean-deploy only: environment name (empty = all)"
-        type: string
-        required: false
-        default: ""
-      keep_latest:
-        description: "clean-deploy only: newest deployments to keep"
-        type: string
-        required: false
-        default: "0"
 
 permissions:
   contents: write
@@ -104,6 +86,11 @@ env:
   # is made. To go back later, use the "restore" manual action.
   BACKUP_TAG: "true"
   BACKUP_KEEP: "3"
+
+  # clean-deploy: how many newest deployments to keep (0 = delete all).
+  DEPLOY_KEEP_LATEST: "1"
+  # clean-deploy: only this environment name (empty = all environments).
+  DEPLOY_ENVIRONMENT: ""
 
   # Old run history: keep this many newest finished runs.
   KEEP_RUNS: "5"
@@ -713,15 +700,9 @@ jobs:
     if: inputs.action == 'restore'
     runs-on: ubuntu-latest
     steps:
-      - name: Check inputs
-        env:
-          CONFIRM: ${{ inputs.confirm }}
+      - name: Check branch
         run: |
           set -euo pipefail
-          if [ "$CONFIRM" != "true" ]; then
-            echo "::error::Tick the confirm box and run again."
-            exit 1
-          fi
           if [ "$GITHUB_REF_TYPE" != "branch" ]; then
             echo "::error::Run this on a branch, not on a tag."
             exit 1
@@ -826,15 +807,9 @@ jobs:
     if: inputs.action == 'clean-repo'
     runs-on: ubuntu-latest
     steps:
-      - name: Check inputs
-        env:
-          CONFIRM: ${{ inputs.confirm }}
+      - name: Check branch
         run: |
           set -euo pipefail
-          if [ "$CONFIRM" != "true" ]; then
-            echo "::error::Tick the confirm box and run again."
-            exit 1
-          fi
           if [ "$GITHUB_REF_TYPE" != "branch" ]; then
             echo "::error::Run this on a branch, not on a tag."
             exit 1
@@ -847,7 +822,6 @@ jobs:
 
       - name: Create backup tag
         id: backup
-        if: inputs.make_backup
         run: |
           set -euo pipefail
 
@@ -971,21 +945,15 @@ jobs:
     steps:
       - name: Delete deployments
         env:
-          CONFIRM: ${{ inputs.confirm }}
-          ENVIRONMENT: ${{ inputs.environment }}
-          KEEP_LATEST: ${{ inputs.keep_latest }}
+          ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+          KEEP_LATEST: ${{ env.DEPLOY_KEEP_LATEST }}
           GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
         run: |
           set -uo pipefail
 
-          if [ "$CONFIRM" != "true" ]; then
-            echo "::error::Tick the confirm box and run again."
-            exit 1
-          fi
-
           KEEP="${KEEP_LATEST:-0}"
           if ! printf '%s' "$KEEP" | grep -qE '^[0-9]+$'; then
-            echo "::error::keep_latest must be a number."
+            echo "::error::DEPLOY_KEEP_LATEST must be a number."
             exit 1
           fi
 
@@ -1044,5 +1012,5 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [ "$FAILED" -gt 0 ]; then
-            exit 1
+            echo "::warning::$FAILED deployment(s) could not be deleted (GitHub may block the active one)."
           fi
