@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import "@fontsource/geist-sans/400.css";
+@import "@fontsource/geist-sans/500.css";
+@import "@fontsource/geist-sans/700.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Geist Sans", sans-serif;
+}
+
+@import "./components/lightswind.css";
+
+* {
+  font-family: "Geist Sans", sans-serif !important;
+}
+
+
+
+
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; }
+.eyebrow { font-size: .72rem; text-transform: uppercase; letter-spacing: .25em; font-weight: 700; color: var(--primary); margin-bottom: .75rem; }
+.section-title { font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.02; font-weight: 800; letter-spacing: -.04em; }
+.field-label { display: block; font-size: .78rem; font-weight: 600; margin-bottom: .35rem; }
+.contact-form {
+  background: var(--form-bg);
+  color: var(--card-fg);
+  border-color: var(--form-field-border);
+}
+
+.field {
+  width: 100%;
+  border: 1px solid var(--form-field-border);
+  background: var(--form-field-bg);
+  border-radius: 14px;
+  padding: .8rem 1rem;
+  color: var(--form-field-fg);
+  caret-color: var(--form-field-fg);
+  outline: none;
+  -webkit-text-fill-color: var(--form-field-fg);
+  transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+}
+.field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.12);
+}
+#contact .field::placeholder {
+  color: var(--form-field-placeholder);
+  opacity: 1;
+  -webkit-text-fill-color: var(--form-field-placeholder);
+}
+.dark #contact .field {
+  color: var(--form-field-fg);
+  background: var(--form-field-bg);
+  border-color: var(--form-field-border);
+}
+.dark #contact .field::placeholder {
+  color: var(--form-field-placeholder);
+  opacity: 1;
+  -webkit-text-fill-color: var(--form-field-placeholder);
+}
+.dark #contact .field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139,92,246,.22);
+}
+#contact .field:-webkit-autofill,
+#contact .field:-webkit-autofill:hover,
+#contact .field:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--form-field-fg);
+  -webkit-box-shadow: 0 0 0 1000px var(--form-field-bg) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
