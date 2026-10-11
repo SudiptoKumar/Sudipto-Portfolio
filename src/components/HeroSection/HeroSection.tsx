@@ -67,7 +67,7 @@ export const HeroSection = () => {
             </h1>
           </motion.div>
 
-          <motion.p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}>I'm Sudipto Kumar, a BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I build practical digital products, websites, AI-assisted workflows, Telegram automation systems, and business-focused technology projects.</motion.p>
+          <motion.p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-8 leading-relaxed w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.8 }}>A BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I build practical digital products, websites, AI-assisted workflows, Telegram automation systems, and business-focused technology projects.</motion.p>
 
           <motion.div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-10 w-full md:w-auto" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6, duration: 0.8 }}>
             <Button type="button" size="lg" onClick={() => go("projects")} className="rounded-full px-7 h-12 bg-primary text-primary-foreground font-semibold flex items-center gap-2 hover:bg-primary/90 transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.5)] hover:-translate-y-1">View Projects <ArrowRight className="w-4 h-4" /></Button>

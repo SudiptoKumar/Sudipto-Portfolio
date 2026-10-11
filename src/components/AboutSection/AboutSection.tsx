@@ -14,8 +14,8 @@ export const AboutSection = () => (
       <div className="flex-1 space-y-8">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-primary font-bold mb-3">About</p>
-          <h2 className="text-[clamp(2.05rem,8.5vw,3rem)] md:text-5xl font-bold tracking-tight mb-4 leading-[1.05]">Business thinking with a <span className="text-gradient-primary">technology mindset</span></h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">I'm Sudipto Kumar, a BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I combine quantitative financial analysis with hands-on software development across automation, full-stack web, and AI-assisted tooling projects. I enjoy turning business ideas into practical digital products, useful workflows, and systems that can be tested in real use.</p>
+          <h2 className="text-[clamp(2.05rem,8.5vw,3rem)] md:text-5xl font-bold tracking-tight mb-4 leading-[1.05]">Finance background, <span className="text-gradient-primary">builder's mindset</span></h2>
+          <p className="text-lg text-muted-foreground leading-relaxed">A BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU). I combine quantitative financial analysis with hands-on software development across automation, full-stack web, and AI-assisted tooling projects. I enjoy turning business ideas into practical digital products, useful workflows, and systems that can be tested in real use.</p>
         </div>
         <div className="glass-panel rounded-2xl p-6 border border-foreground/10">
           <p className="text-sm text-muted-foreground leading-relaxed"><span className="font-semibold text-foreground">Current direction:</span> building a strong foundation in finance and business while continuing hands-on work with web development, AI-assisted workflows, Telegram automation, business research, and digital product ideas. My interests include financial markets, corporate finance, equity research, business technology, automation, and AI.</p>
