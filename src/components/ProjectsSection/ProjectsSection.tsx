@@ -2,15 +2,14 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 const projects = [
-  ["Campus Duty", "Web Development", "/assets/project-1.webp", "https://campusduty.netlify.app/"],
-  ["Study Campus OS", "Digital Product", "/assets/project-2.webp", null],
-  ["StudyMart", "Web Development", "/assets/project-3.webp", null],
-  ["Business Newsroom", "Automation", "/assets/project-4.webp", "https://t.me/BusinessNewsroom"],
-  ["Gaming Newsroom", "Automation", "/assets/project-5.webp", "https://t.me/GamingNewsroom"],
-  ["Tech Newsroom", "Automation", "/assets/project-6.webp", "https://t.me/TheTechNewsroom"],
-  ["Entertainment Newsroom", "Automation", "/assets/project-7.webp", "https://t.me/EntertainmentNewsroom"],
-  ["Science Newsroom", "Automation", "/assets/project-8.webp", "https://t.me/ScienceNewsroom"],
-  ["Telegram News Automation", "Automation", "/assets/project-9.webp", null],
+  ["Campus Duty", "Web Development", "/assets/project-1.webp", "https://campusduty.vercel.app/", "Student productivity web app (TypeScript)"],
+  ["LetterShare", "Web Development", "/assets/project-2.webp", "https://shareletter.vercel.app/", "Full-stack Next.js social platform (Firebase)"],
+  ["DocFlow", "Mobile App", "/assets/project-3.webp", "https://github.com/SudiptoKumar/DocFlow", "Native Android Markdown editor (Kotlin)"],
+  ["StudyMart BD", "Web Development", "/assets/project-4.webp", "https://studymartbd.vercel.app/", "Single-owner digital product e-shop (Next.js)"],
+  ["Newsroom Automation", "Automation", "/assets/project-5.webp", "https://t.me/NewsroomHQ", "14-bot Python news network (GitHub Actions)"],
+  ["WORKSHOP Automation", "Automation", "/assets/project-6.webp", "https://github.com/SudiptoKumar/WORKSHOP-", "Workshop management system (Apps Script)"],
+  ["Class Announcement", "Web Development", "/assets/project-7.webp", "https://finanacecr.netlify.app", "Class announcement web app"],
+  ["Study Campus OS", "Digital Product", "/assets/project-8.webp", null, null],
 ] as const;
 
 export const ProjectsSection = () => (
@@ -22,7 +21,7 @@ export const ProjectsSection = () => (
     </motion.div>
 
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      {projects.map(([title, category, image, href], i) => {
+      {projects.map(([title, category, image, href, description], i) => {
         const linkProps = href ? { href, target: "_blank" as const, rel: "noreferrer" as const } : {};
         return (
           <motion.a
@@ -48,7 +47,7 @@ export const ProjectsSection = () => (
             </div>
             <div className="p-5">
               <h3 className="font-bold text-lg text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{href ? "Open project or channel ↗" : "Project details coming soon."}</p>
+              <p className="text-sm text-muted-foreground mt-1">{description ?? "Project details coming soon."}</p>
             </div>
           </motion.a>
         );

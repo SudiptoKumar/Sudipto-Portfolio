@@ -4,7 +4,7 @@ import { MagicCard } from "../lightswind/magic-card";
 
 const services = [
   { icon: Code2, title: "Web & Digital Products", description: "Building responsive websites and practical web platforms with a strong focus on usability, clean structure, and maintainability." },
-  { icon: LineChart, title: "Business & Finance", description: "Applying Finance and Banking knowledge to business-oriented projects, research, analysis, and decision-support ideas." },
+  { icon: LineChart, title: "Business & Finance", description: "Applying Finance and Banking knowledge to business research and analysis that supports real decisions." },
   { icon: Bot, title: "AI & Automation", description: "Experimenting with AI-assisted workflows, intelligent content processing, API integrations, and automation systems." },
   { icon: Layers3, title: "Telegram News Systems", description: "Designing newsroom workflows, scoring pipelines, duplicate protection, image fallbacks, and scheduled Telegram publishing." },
 ];

@@ -8,7 +8,7 @@ export const EducationSection = () => {
     {
       degree: "BBA (Honours), Finance and Banking",
       school: "Patuakhali Science and Technology University",
-      year: "2023 – 2028 (Expected)",
+      year: "2023 – 2027 (Expected)",
       badge: "Current Study",
       badgeIcon: GraduationCap,
       badgeColor: "text-emerald-400 bg-emerald-500/10 border-emerald-500/30",
