@@ -1,6 +1,10 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowUp, Send, UserRound } from "lucide-react";
+import { Github, Linkedin, Mail, ArrowUp, UserRound } from "lucide-react";
 import { MorphingText } from "../lightswind/morphing-text";
+
+const TelegramIcon = ({ className }: { className?: string }) => (
+  <img src="/assets/telegram-app.png" alt="" width={16} height={16} className={className} loading="lazy" decoding="async" />
+);
 
 export const Footer = () => {
   const morphingTexts = ["BBA Student", "Finance & Banking", "Tech Enthusiast", "Automation Builder", "Sudipto Kumar"];
@@ -8,7 +12,7 @@ export const Footer = () => {
   const socialLinks = [
     { icon: Github, href: "https://github.com/SudiptoKumar", label: "GitHub" },
     { icon: Linkedin, href: "https://www.linkedin.com/in/sudipto-kumar/", label: "LinkedIn" },
-    { icon: Send, href: "https://t.me/SudiptoSarkar", label: "Telegram" },
+    { icon: TelegramIcon, href: "https://t.me/SudiptoSarkar", label: "Telegram" },
     { icon: Mail, href: "mailto:sudipto.karn@gmail.com", label: "Email" },
   ];
 
