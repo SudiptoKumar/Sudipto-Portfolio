@@ -93,7 +93,7 @@ export const HeroSection = () => {
               </div>
 
               <div className="p-5 flex flex-col items-center text-center bg-card text-card-foreground flex-1 gap-3">
-                <div><h3 className="text-xl font-extrabold tracking-tight text-foreground">Sudipto Kumar</h3><div className="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold">BBA Student · Tech Enthusiast</div></div>
+                <div><p className="text-xl font-extrabold tracking-tight text-foreground">Sudipto Kumar</p><div className="inline-flex items-center gap-1.5 mt-1 px-3 py-0.5 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold">BBA Student · Tech Enthusiast</div></div>
                 <div className="w-full border-t border-border/60 my-0.5" />
                 <div className="grid grid-cols-2 gap-2.5 w-full text-left bg-muted/40 p-3 rounded-xl border border-border/50">
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Specialty</span><span className="font-bold text-foreground text-xs leading-tight">Tech · Business</span></div>
@@ -101,7 +101,7 @@ export const HeroSection = () => {
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Education</span><span className="font-bold text-foreground text-xs">BBA Finance</span></div>
                   <div className="min-w-0"><span className="text-muted-foreground block text-[9px] uppercase tracking-widest font-bold">Status</span><span className="font-bold text-emerald-500 text-xs">● Active</span></div>
                 </div>
-                <div className="flex flex-col items-center mt-auto pt-1"><img src="/assets/sudipto-contact-qr.png" alt="Contact QR code for Sudipto Kumar" className="w-28 h-28 rounded-lg bg-white p-1" /></div>
+                <div className="flex flex-col items-center mt-auto pt-1"><img src="/assets/sudipto-contact-qr.png" alt="Contact QR code for Sudipto Kumar" width={112} height={112} loading="lazy" className="w-28 h-28 rounded-lg bg-white p-1" /></div>
               </div>
             </div>
           </HangingIdCard>

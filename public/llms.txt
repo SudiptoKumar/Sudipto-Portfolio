@@ -1,0 +1,30 @@
+# Sudipto Kumar
+
+> Personal portfolio of Sudipto Kumar, a BBA student specializing in Finance and Banking at Patuakhali Science and Technology University (PSTU), Bangladesh. He builds web apps, AI-assisted workflows, digital products and Telegram automation systems, and is Co-Director of Marketing & Branding at Finance Club PSTU.
+
+Canonical site: https://sudiptokumar.vercel.app/ (single-page portfolio).
+
+## Profiles
+- [GitHub](https://github.com/SudiptoKumar)
+- [LinkedIn](https://www.linkedin.com/in/sudipto-kumar/)
+- [Telegram](https://t.me/SudiptoSarkar)
+- [X](https://x.com/SudiptoKarn)
+- [Resume (PDF)](https://sudiptokumar.vercel.app/resume.pdf)
+
+## Education
+- BBA (Honours), Finance and Banking, Patuakhali Science and Technology University, 2023-2027 (expected)
+- HSC, Business Studies, New Government Degree College, Rajshahi, 2019-2020
+- SSC, Business Studies, Mainam Bahumukhy High School & College, 2017-2018
+
+## Projects
+- [Campus Duty](https://campusduty.vercel.app/): student productivity web app (TypeScript)
+- [LetterShare](https://shareletter.vercel.app/): full-stack Next.js social platform (Firebase)
+- [DocFlow](https://github.com/SudiptoKumar/DocFlow): native Android Markdown editor (Kotlin)
+- [StudyMart BD](https://studymartbd.vercel.app/): single-owner digital product e-shop (Next.js)
+- [Newsroom Automation](https://t.me/NewsroomHQ): 14-bot Python news network on GitHub Actions
+- [WORKSHOP Automation](https://github.com/SudiptoKumar/WORKSHOP-): workshop management system (Apps Script)
+- [Class Announcement](https://finanacecr.netlify.app): class announcement web app
+- Study Campus OS: AI-assisted study workflow (no public link)
+
+## Identity note
+Not to be confused with other people named Sudipto Kumar. This Sudipto Kumar studies Finance and Banking at PSTU, Patuakhali, Bangladesh.

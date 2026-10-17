@@ -39,3 +39,13 @@ This release keeps the existing visual portfolio identity unchanged and strength
 ## 2026-10-02 Theme/Aurora correction
 - Repaired the Hero Aurora name effect so animated color is clipped to the text glyphs and cannot render as a rectangle.
 - Removed the previously requested Community Perspectives/sample testimonials section and its navigation entry.
+
+## v4 (2026-10-16): re-applied and extended on the latest code
+- index.html: crawlable static copy of the page inside `#root` (React replaces it on load); meta description cut to 147 chars; robots meta adds max-snippet; JSON-LD adds alumniOf, memberOf (Finance Club PSTU), hasOccupation, nationality, homeLocation, knowsLanguage; dateModified refreshed; saved dark theme restored before first paint.
+- robots.txt (AI crawlers allowed, /api/ blocked), sitemap.xml (current lastmod, image:loc only), new llms.txt.
+- public/_redirects: Netlify mirror 301s to the Vercel canonical. Delete this file if you want the Netlify copy to stay live.
+- vercel.json: security headers, 7-day asset cache. (`cleanUrls` deliberately NOT enabled: it would redirect the Google verification file.)
+- vite.config.ts: vendor chunk splitting.
+- resume.pdf: Title/Author/Subject/Keywords metadata filled in (content unchanged).
+- Components: Contact link in nav; descriptive alt text and real dimensions on project images; "Project details coming soon" replaced with a real description; hero ID-card h3 -> p; QR and tech icons get width/height.
+- New: RANK-PLAN.md (off-site playbook with copy-paste bios) and scripts/set-domain.mjs (one command to switch to a custom domain).

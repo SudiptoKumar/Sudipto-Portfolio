@@ -9,7 +9,7 @@ const projects = [
   ["Newsroom Automation", "Automation", "/assets/project-5.webp", "https://t.me/NewsroomHQ", "14-bot Python news network (GitHub Actions)"],
   ["WORKSHOP Automation", "Automation", "/assets/project-6.webp", "https://github.com/SudiptoKumar/WORKSHOP-", "Workshop management system (Apps Script)"],
   ["Class Announcement", "Web Development", "/assets/project-7.webp", "https://finanacecr.netlify.app", "Class announcement web app"],
-  ["Study Campus OS", "Digital Product", "/assets/project-8.webp", null, null],
+  ["Study Campus OS", "Digital Product", "/assets/project-8.webp", null, "AI-assisted study workflow that turns raw academic material into exam-ready notes and practice content"],
 ] as const;
 
 export const ProjectsSection = () => (
@@ -22,7 +22,7 @@ export const ProjectsSection = () => (
 
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {projects.map(([title, category, image, href, description], i) => {
-        const linkProps = href ? { href, target: "_blank" as const, rel: "noreferrer" as const } : {};
+        const linkProps = href ? { href, target: "_blank" as const, rel: "noopener noreferrer" as const } : {};
         return (
           <motion.a
             key={title}
@@ -34,7 +34,7 @@ export const ProjectsSection = () => (
             className={`group glass-panel overflow-hidden rounded-3xl border border-foreground/10 shadow-xl transition-colors duration-500 ${href ? "hover:border-primary/30" : "cursor-default"}`}
           >
             <div className="relative aspect-[16/10] overflow-hidden bg-neutral-950">
-              <img src={image} alt={title} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
+              <img src={image} alt={`${title} project preview by Sudipto Kumar`} width={1920} height={1200} loading="lazy" decoding="async" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 group-hover:opacity-100" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
                 <span className="text-[11px] uppercase tracking-widest text-white/85 bg-black/25 backdrop-blur rounded-full px-3 py-1 border border-white/10">{category}</span>
@@ -47,7 +47,7 @@ export const ProjectsSection = () => (
             </div>
             <div className="p-5">
               <h3 className="font-bold text-lg text-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground mt-1">{description ?? "Project details coming soon."}</p>
+              <p className="text-sm text-muted-foreground mt-1">{description}</p>
             </div>
           </motion.a>
         );

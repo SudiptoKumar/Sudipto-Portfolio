@@ -1,4 +1,18 @@
+# Sudipto Kumar portfolio - https://sudiptokumar.vercel.app
 User-agent: *
 Allow: /
+Disallow: /api/
+
+# Search and AI answer-engine crawlers are welcome to read the public portfolio
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /api/
 
 Sitemap: https://sudiptokumar.vercel.app/sitemap.xml
