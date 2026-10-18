@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Download, Github, Linkedin, Mail, Send, UserRound, Laptop, Smartphone, Bot, Database, Cpu, BarChart3, Braces, Globe2, Workflow, CircleDollarSign } from "lucide-react";
+import { ArrowRight, Download, Github, Linkedin, Mail, UserRound, Laptop, Smartphone, Bot, Database, Cpu, BarChart3, Braces, Globe2, Workflow, CircleDollarSign } from "lucide-react";
 import TechStackSection from "../TechStackSection/TechStackSection";
 import { Button } from "../lightswind/button";
 import { Badge } from "../lightswind/badge";
@@ -7,10 +7,14 @@ import { HangingIdCard } from "../lightswind/HangingIdCard";
 import { AuroraTextEffect } from "../lightswind/aurora-text-effect";
 import { DotPattern } from "../lightswind/dot-pattern";
 
+const TelegramIcon = ({ className }: { className?: string }) => (
+  <img src="/assets/telegram-app.png" alt="" width={20} height={20} className={className} loading="lazy" decoding="async" />
+);
+
 const links = [
   [Github, "https://github.com/SudiptoKumar", "GitHub"],
   [Linkedin, "https://www.linkedin.com/in/sudipto-kumar/", "LinkedIn"],
-  [Send, "https://t.me/SudiptoSarkar", "Telegram"],
+  [TelegramIcon, "https://t.me/SudiptoSarkar", "Telegram"],
   [Mail, "mailto:sudipto.karn@gmail.com", "Email"],
 ] as const;
 
