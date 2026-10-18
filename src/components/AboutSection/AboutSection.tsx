@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Bot, GraduationCap, Megaphone, Rocket } from "lucide-react";
+import { Bot, Megaphone, Rocket, TicketCheck } from "lucide-react";
 
 const stats = [
   { icon: <Bot className="w-6 h-6" />, value: "11", label: "Bots in Production" },
   { icon: <Rocket className="w-6 h-6" />, value: "12+", label: "Projects Shipped" },
-  { icon: <Megaphone className="w-6 h-6" />, value: "Co-Director", label: "Marketing & Branding" },
-  { icon: <GraduationCap className="w-6 h-6" />, value: "3", label: "Education Stages" },
+  { icon: <TicketCheck className="w-6 h-6" />, value: "4", label: "Workshops Automated" },
+  { icon: <Megaphone className="w-6 h-6" />, value: "1", label: "Leadership Role" },
 ];
 
 export const AboutSection = () => (
