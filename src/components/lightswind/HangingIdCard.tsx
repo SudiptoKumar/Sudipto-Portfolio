@@ -259,6 +259,13 @@ export const HangingIdCard = ({
     setIsDragState(false);
   }, []);
 
+  // If the browser takes over the gesture (e.g. vertical page scroll with
+  // touch-action: pan-y), end the drag so the pendulum doesn't freeze mid-swing
+  const onPointerCancel = useCallback(() => {
+    isDraggingRef.current = false;
+    setIsDragState(false);
+  }, []);
+
   // ── Click impulse (tap) ─────────────────────────────────────────────────────
   const onCardClick = useCallback(() => {
     if (Math.abs(physRef.current.vel) < 0.1 && Math.abs(physRef.current.angle) < 0.05) {
@@ -274,7 +281,8 @@ export const HangingIdCard = ({
   return (
     <div
       className={cn("flex flex-col items-center select-none", className)}
-      style={{ touchAction: "none" }}
+      // pan-y: vertical swipes scroll the page on touch; horizontal drags still swing the card
+      style={{ touchAction: "pan-y" }}
     >
       {/* Ceiling anchor pin */}
       <div
@@ -287,6 +295,7 @@ export const HangingIdCard = ({
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onClick={onCardClick}
         style={{
           transform: `rotate(${cardRotateDeg}deg)`,
